@@ -1,0 +1,13 @@
+{
+    "__COMMENT" : "THIS IS WHERE ALL CONFIG PARAMETERS GOES",
+    "__COMMENT" : "****** SYSTEM ******",
+    "is_https"        : true,
+    "site"            : "english-game-mpa.herokuapp.com",
+    "version"         : "1.0.0",
+    "local_port"      : 8080,
+    "cache_time"      : 600000,
+
+
+    "__COMMENT" : "****** GAME ******",
+    "_NONE" : "_NONE"
+}

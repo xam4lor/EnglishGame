@@ -1,0 +1,30 @@
+{
+  "name": "englishgame",
+  "version": "1.0.0",
+  "description": "A game for our English Class",
+  "main": "index.js",
+  "scripts": {
+    "watch": "nodemon ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xam4lor/EnglishGame.git"
+  },
+  "author": "xam4lor, vrodriguez01",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xam4lor/EnglishGame/issues"
+  },
+  "homepage": "https://github.com/xam4lor/EnglishGame#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "sitemap": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.3",
+    "request": "^2.88.0"
+  }
+}
