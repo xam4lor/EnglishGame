@@ -10,7 +10,8 @@ const m = {
     path           : require('path'),
     body_parser    : require('body-parser'),
     config         : require('./datas/config.json'),
-    routes         : require('./routes/index')
+    routes         : require('./routes/index'),
+    s_comms        : require('./routes/socket-io-comms')
 };
 
 
@@ -43,6 +44,10 @@ const HOST_NAME = isLocalHost > -1 ? HTTP_OR_S + HOST : HOST;
 /* ====== APP ====== */
     // == Server config dependencies ==
 const app = m.express();
+const server = require('http').Server(app);
+
+m.s_comms.runSocket(server); // launches socket-io
+
 
 
     // == Server config ==
@@ -102,4 +107,4 @@ app
 
 
 /* ====== MODULE ====== */
-module.exports = app;
+module.exports = server;

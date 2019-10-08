@@ -7,6 +7,7 @@ const m = {
     express : require('express')
 };
 
+
 const router = m.express.Router();
 
 
@@ -15,9 +16,7 @@ const router = m.express.Router();
 /* ====== APP ====== */
 router
     // root folder
-    .get('/', (req, res) => {
-        // render index here
-    })
+    .get('/', (req, res) => res.render('pages/index'))
 ;
 
 
