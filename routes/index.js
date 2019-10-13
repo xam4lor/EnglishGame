@@ -16,7 +16,7 @@ const router = m.express.Router();
 /* ====== APP ====== */
 router
     // root folder
-    .get('/', (req, res) => res.render('pages/index'))
+    .get('/', (req, res) => res.render('pages/accueil'))
 ;
 
 
