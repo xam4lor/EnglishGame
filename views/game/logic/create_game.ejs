@@ -1,1 +1,11 @@
 <!-- CREATE A NEW GAME AND SHOWS THE GAME CONFIGURATION -->
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+    let socket = io.connect();
+    let room = "<%= room_id %>";
+
+    socket.on('connect', function() {
+        if(room != "")
+            socket.emit('room', room);
+    });
+</script>

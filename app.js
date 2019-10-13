@@ -46,7 +46,8 @@ const HOST_NAME = isLocalHost > -1 ? HTTP_OR_S + HOST : HOST;
 const app = m.express();
 const server = require('http').Server(app);
 
-m.s_comms.runSocket(server); // launches socket-io
+let io = m.s_comms.runSocket(server); // launches socket-io
+m.routes.init(io);
 
 
 
@@ -88,7 +89,7 @@ app
 
     // == Files ==
 app
-    .use('/', m.routes);
+    .use('/', m.routes.router);
 
 
 
