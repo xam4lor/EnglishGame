@@ -6,6 +6,11 @@
     socket.on('redirect_user', function(dest) {
         window.location.href = dest;
     });
+
+
+    function connect() {
+        window.location.href = "/game/waiting?room_id=" + document.getElementById('gamePin').value;
+    }
 </script>
 
 
@@ -14,5 +19,5 @@
 
 <!-- on entre le game pin directement sur la page -->
 <br /><br />
-<input type="text" value="Game pin">
-<button type="submit">Connexion</button>
+<input id="gamePin" type="text" value="Game pin">
+<button type="submit" onclick="connect()">Connexion</button>

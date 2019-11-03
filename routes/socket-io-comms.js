@@ -45,7 +45,12 @@ class GameParty {
         if(pa && pa.players[localIp] == undefined) {
             pa.players[localIp] = {
                 global_ip: localIp,
-                socket_ip: socketId
+                socket_ip: socketId,
+                pseudo: "not implemented yet",
+                points : {
+                    fastest: 0,
+                    popular: 0
+                }
             };
 
             if(isMainUser) pa.players[localIp].is_main_user = isMainUser;
@@ -54,6 +59,20 @@ class GameParty {
         }
 
         socket.join(roomId);
+    }
+
+
+    /**
+    * @param localIp the ip to be tested
+    * @param roomId
+    * @return true if the user is the super admin of the party
+    */
+    isSuperAdmin(localIp, roomId) {
+        let pa = this.getParty(roomId);
+
+        if(pa && pa.players && pa.players[localIp] != undefined && pa.players[localIp] && pa.players[localIp].is_main_user)
+            return true;
+        return false;
     }
 
 
@@ -74,18 +93,25 @@ class GameParty {
         let p = {
             id: "r_" + token,
             began: false,
-            config: {
-                round_count : 5
+            config: { // default and minimal config if any bug occurs
+                round_count : 1
             },
             players: {
-                // "global_ip": {
+                // "global_ip_xxx": {
                 //     is_main_user: false,
-                //     global_ip : "",
-                //     socket_ip : ""
+                //     global_ip : "xxxx",
+                //     socket_ip : "xxxx",
+                /** @TODO implement the next line */
+                //     pseudo : "xxxx",
+                //     points : {
+                //          fastest: 0,
+                //          popular: 0
+                //     }
                 // }
             },
             game: {
-                current_round: 0,
+                current_round: 0,    // first round is 1
+                current_round_id: 0, // 0 for answering and 1 for voting
                 sentences_id_done: []
             }
         };
@@ -103,7 +129,7 @@ class GameParty {
     * @return true if values are OK and integrity is verified
     */
     handleConfig(b) {
-        if(!b.room_id || !b.round_count || isNaN(b.round_count)) {
+        if(!b.room_id || !b.round_count || isNaN(b.round_count) || parseInt(b.round_count) < 0) {
             this.party_list.pop();
             this.id_list.pop();
             return false;

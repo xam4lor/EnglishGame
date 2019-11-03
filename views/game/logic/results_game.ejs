@@ -2,4 +2,10 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
     let socket = io.connect();
+    let pScores = JSON.parse("<%= pScores %>".replace(/&#34;/g, '"'));
+
+    console.log("Players scores:", pScores);
 </script>
+
+
+<p>Résultats (voir console)</p>

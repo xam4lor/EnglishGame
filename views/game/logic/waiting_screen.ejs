@@ -3,7 +3,7 @@
 <script type="text/javascript">
     let socket = io.connect();
     let room = "<%= room_id %>";
-    let isSuperAdmin = "<%= is_super_admin %>";
+    let isSuperAdmin = <%= is_super_admin %>;
 
     socket.on('connect', function() {
         if(room != "")
@@ -14,11 +14,14 @@
         console.log(`A new player has come. Total player count is now ${player_total_count}.`)
     });
 
-
-    if(isSuperAdmin)
-        document.getElementById('submit_button').style.display = 'unset';
+    window.onload = function() {
+        if(isSuperAdmin)
+            document.getElementById('submit_button').style.display = 'unset';
+    };
 </script>
 
+
+<p>En attente d'autres joueurs...</p>
 
 <form action="/req/begin_party" method="post">
     <input style="display: none;" id="submit_button" type="submit" value="Commencer la partie">
