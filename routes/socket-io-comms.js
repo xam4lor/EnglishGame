@@ -50,7 +50,8 @@ class GameParty {
                 points : {
                     fastest: 0,
                     popular: 0
-                }
+                },
+                results_shown: false
             };
 
             if(isMainUser) pa.players[localIp].is_main_user = isMainUser;
@@ -106,7 +107,8 @@ class GameParty {
                 //     points : {
                 //          fastest: 0,
                 //          popular: 0
-                //     }
+                //     },
+                //     results_shown: false
                 // }
             },
             game: {
@@ -119,6 +121,14 @@ class GameParty {
         this.party_list.push(p);
 
         return p;
+    }
+
+    /**
+    * Delete a party from the list
+    * @param party the party to be deleted
+    */
+    deleteParty(party) {
+        this.party_list.pop(party);
     }
 
 

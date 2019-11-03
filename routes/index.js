@@ -114,7 +114,19 @@ router
             return;
         }
 
+        p.players[req.ip].results_shown = true;
         res.render('game/logic/results_game', { pScores: JSON.stringify(p.players) });
+
+
+        // if every player saw the results, delete the party
+        let rt = 0;
+        let arr = Object.keys(p.players);
+        for (let i = 0; i < arr.length; i++)
+            if(p.players[arr[i]].results_shown)
+                rt++;
+
+        if(arr.length == rt)
+            gameInstance.deleteParty(p);
     })
 
 
