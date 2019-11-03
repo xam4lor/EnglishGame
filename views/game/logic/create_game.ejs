@@ -6,6 +6,17 @@
 
     socket.on('connect', function() {
         if(room != "")
-            socket.emit('room', room);
+            socket.emit('join_room', room, true);
     });
 </script>
+
+<form action="/req/set_config" method="post">
+    <p>CONFIGURATION</p>
+    <input name="round_count" type="text" placeholder="Nombre de rounds" />
+    <p>NE PAS ESSAYER DE VALEUR INCOHERENTE.... et puis pour l'instant mettez un nombre entre 1 et 10 disons</p>
+
+
+    <input style="display: none;" name="room_id" type="text" value="<%= room_id %>" />
+
+    <input type="submit" value="Valider">
+</form>
