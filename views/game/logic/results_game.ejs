@@ -4,16 +4,26 @@
     let socket = io.connect();
     let pScores = JSON.parse("<%= pScores %>".replace(/&#34;/g, '"'));
 
-    console.log("Players scores:", pScores);
-
-    document.onload = function() {
+    window.onload = function() {
         let allCount = Object.keys(pScores);
 
+        let liEl = document.getElementById('scores_show');
         for (let i = 0; i < allCount.length; i++) {
-            array[i]
+            let itemLi = document.createElement('li');
+
+            itemLi.appendChild(document.createTextNode("Player " + pScores[allCount[i]].uuid + " : ")); /** @TODO : display pseudos here */
+            itemLi.appendChild(document.createTextNode("  Total : " + Math.round(pScores[allCount[i]].points.fastest + pScores[allCount[i]].points.popular)));
+            itemLi.appendChild(document.createTextNode("  Score popular : " + Math.round(pScores[allCount[i]].points.popular)));
+            itemLi.appendChild(document.createTextNode("  Score fastest : " + Math.round(pScores[allCount[i]].points.fastest)));
+
+            liEl.appendChild(itemLi);
         }
     }
 </script>
 
 
-<p>Résultats (voir console)</p>
+<div class="scores">
+    <p>Résultats :</p>
+    <div id="scores_show">
+    </div>
+</div>
