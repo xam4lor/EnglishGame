@@ -46,6 +46,7 @@ class GameParty {
         let pa = this.getParty(roomId);
         if(pa && pa.players[localIp] == undefined) {
             pa.players[localIp] = {
+                uuid: pa.config.next_player_uuid,
                 global_ip: localIp,
                 socket_ip: socketId,
                 pseudo: "not implemented yet",
@@ -57,6 +58,7 @@ class GameParty {
                 },
                 results_shown: false
             };
+            pa.config.next_player_uuid++;
 
             if(isMainUser) pa.players[localIp].is_main_user = isMainUser;
 
@@ -88,7 +90,7 @@ class GameParty {
     generateNextSentence(p) {
         while(true) {
             let r = Math.round(Math.random() * this.sentences.length) - 1;
-            if(!p.game.sentences_id_done.includes(r)) {
+            if(!p.game.sentences_id_done.includes(r) && this.sentences[r]) {
                 p.game.current_sentence = this.sentences[r];
                 p.game.sentences_id_done.push(r);
                 return;
@@ -113,9 +115,9 @@ class GameParty {
         }
 
 
-        // handle
+        // handle possible errors
         if(p.game.current_round_id == 0) { // filled question
-            if(answer.__proto__.constructor.name != "String") {
+            if(!answer || answer.__proto__.constructor.name != "String") {
                 socket.emit('game_answer_response', "Your answer is incorrect.", true);
                 return;
             }
@@ -139,39 +141,132 @@ class GameParty {
                     return;
                 }
             }
-
-
-            // valid answer
-            let cr = p.game.current_round;
-            p.players[localIp].last_answer = answer;
-            p.players[localIp].last_answer_round = cr;
-            socket.emit('game_answer_response', "Valid answer.", false);
-
-
-            // next round ?
-            let rt = 0;
-            let arr = Object.keys(p.players);
-            for (let i = 0; i < arr.length; i++)
-                if(p.players[arr[i]].last_answer_round == cr)
-                    rt++;
-
-            if(rt >= arr.length) {
-                if(p.game.current_round_id == 1) {
-                    this.generateNextSentence(p);
-                    p.game.current_round++;
-                }
-
-                p.game.current_round_id = (p.game.current_round_id + 1) % 2;
-
-                socket.emit('game_reload');
-                socket.broadcast.to(p.id).emit('game_reload');
-            }
         }
         else { // vote page
+            // check if error
+            if(!answer || isNaN(answer) || parseInt(answer) < 0 || parseInt(answer) > p.config.next_player_uuid - 1) {
+                socket.emit('game_answer_response', "Your answer is incorrect.", true);
+                return;
+            }
 
+            p.game.current_fastest_id   .push(p.players[localIp].uuid);
+            p.game.current_popular_votes.push(parseInt(answer));
+        }
+
+
+        // valid answer
+        let cr = p.game.current_round;
+        p.players[localIp].last_answer = answer;
+        p.players[localIp].last_answer_round = cr;
+        socket.emit('game_answer_response', "Valid answer.", false);
+
+        // next round ?
+        let rt = 0;
+        let arr = Object.keys(p.players);
+        for (let i = 0; i < arr.length; i++)
+            if(p.players[arr[i]].last_answer_round == cr)
+                rt++;
+
+        if(rt >= arr.length) {
+            if(p.game.current_round_id == 1) {
+                this.calculatePoints(p);
+
+                p.game.current_fastest_id    = [];
+                p.game.current_popular_votes = [];
+
+                this.generateNextSentence(p);
+                p.game.current_round++;
+            }
+
+            p.game.current_round_id = (p.game.current_round_id + 1) % 2;
+            socket.emit('game_reload');
+            socket.broadcast.to(p.id).emit('game_reload');
         }
     }
 
+
+    /**
+    * Calculates the news points of every player
+    * @param p the party
+    */
+    calculatePoints(p) {
+        // FASTEST
+        let kPlayer = Object.keys(p.players);
+
+        for (let i = 0; i < p.game.current_fastest_id.length; i++)
+            for (let j = 0; j < kPlayer.length; j++)
+                if(p.players[kPlayer[j]].uuid == p.game.current_fastest_id[i]) {
+                    p.players[kPlayer[j]].points.fastest += p.points.fastest(kPlayer.length, i, this.config);
+                    break;
+                }
+
+
+
+        // BEST ANSWER
+        let tmpObj = {};
+        for (let i = 0; i < p.game.current_popular_votes.length; i++) {
+            if(tmpObj[p.game.current_popular_votes[i]])
+                tmpObj[p.game.current_popular_votes[i]] += 1;
+            else
+                tmpObj[p.game.current_popular_votes[i]] = 1;
+        }
+
+        let tmpObjK = Object.keys(tmpObj);
+        tmpObjK.sort(function(a, b) { return b-a });  // best_uuid, second best_uuid, ...
+
+        let finalScore = {};
+        let counter = 1;
+
+        while(tmpObjK.length > 0) {
+            let bestScore = -1;
+            let objWithBestScore = [];
+
+            // the current best goes in array
+            for (let i = 0; i < tmpObjK.length; i++) {
+                if(tmpObj[tmpObjK[i]] > bestScore) {
+                    objWithBestScore = [tmpObjK[i]];
+                    bestScore = tmpObj[tmpObjK[i]];
+                }
+                else if(tmpObj[tmpObjK[i]] == bestScore)
+                    objWithBestScore.push(tmpObjK[i]);
+            }
+            // they get added in finalScore and are removed from tmpObjK
+            finalScore[counter] = objWithBestScore;
+            counter += objWithBestScore.length;
+
+            let redo = true;
+            while(redo) {
+                redo = false;
+                for (let i = 0; i < tmpObjK.length; i++) {
+                    if(objWithBestScore.includes(tmpObjK[i])) {
+                        tmpObjK.splice(i, 1);
+                        redo = true;
+                    }
+                }
+            }
+        }
+
+        let tmpFScoresK = Object.keys(finalScore);
+        let highest = Number.NEGATIVE_INFINITY;
+        for (let i = 0; i < tmpFScoresK.length; i++) {
+            if(tmpFScoresK[i] > highest)
+                highest = tmpFScoresK[i];
+        }
+
+        for (let i = 0; i < highest + 1; i++) {
+            if(finalScore[i]) {
+                for (let j = 0; j < finalScore[i].length; j++) {
+                    let score = p.points.best(kPlayer.length, i, this.config);
+
+                    for (let k = 0; k < kPlayer.length; k++)
+                        if(p.players[kPlayer[j]].uuid == finalScore[i][j]) {
+                            p.players[kPlayer[j]].points.popular += score;
+                            break;
+                        }
+                }
+            }
+        }
+    }
 
 
 
@@ -188,14 +283,16 @@ class GameParty {
         this.id_list.push(token);
 
         let p = {
-            id: "r_" + token,
-            began: false,
-            finished: false,
-            config: { // default and minimal config if any bug occurs
-                round_count : 1
+            id : "r_" + token,
+            began : false,
+            finished : false,
+            config : { // default and minimal config if any bug occurs
+                round_count : 1,
+                next_player_uuid : 0
             },
-            players: {
-                // "global_ip_xxx": {
+            players : {
+                // "global_ip_xxx" : {
+                //     uuid : 0,
                 //     pseudo : "xxxx",
                 //     global_ip : "xxxx",
                 //     socket_ip : "xxxx",
@@ -203,18 +300,28 @@ class GameParty {
                 //     last_answer_round : 0,
                 /** @TODO implement the next line */
                 //     points : {
-                //          fastest: 0,
-                //          popular: 0
+                //          fastest : 0,
+                //          popular : 0
                 //     },
-                //     is_main_user: false,
-                //     results_shown: false
+                //     is_main_user : false,
+                //     results_shown : false
                 // }
             },
-            game: {
-                current_round: 0,    // first round is 1
-                current_round_id: 0, // 0 for answering and 1 for voting
-                current_sentence: "",
-                sentences_id_done: []
+            game : {
+                current_round : 0,    // first round is 1
+                current_round_id : 0, // 0 for answering and 1 for voting
+                current_sentence : "",
+                current_fastest_id : [],
+                current_popular_votes : [],
+                sentences_id_done : []
+            },
+            points : {
+                best : function(players_count, p_rank) {
+                    return (players_count - p_rank + 1) * 50;
+                },
+                fastest : function(players_count, p_rank, config) {
+                    return this.best(players_count, p_rank) / config.points.fastest_N;
+                }
             }
         };
 
@@ -267,7 +374,24 @@ class GameParty {
     getOPlayerInfos(p) {
         let tmp = {};
 
-        return p.players;
+        let pl = Object.keys(p.players);
+        for (let i = 0; i < pl.length; i++) {
+            let answ = "";
+            let gameSplS = p.game.current_sentence.split("$$$");
+            let lastSplS = p.players[pl[i]].last_answer.split("$$$");
+            for (let i = 0; i < gameSplS.length * 2 - 1; i++) {
+                if(i % 2 == 0) answ += gameSplS[i / 2];
+                else           answ += "____b____" + lastSplS[Math.round(i / 2) - 1] + "____b____";
+            }
+
+            tmp[p.players[pl[i]].uuid] = {
+                uuid: p.players[pl[i]].uuid,
+                pseudo: p.players[pl[i]].pseudo,
+                answer: answ
+            };
+        }
+
+        return tmp;
     }
 
     /**
@@ -275,7 +399,18 @@ class GameParty {
     * @return all informations to calculate the total points allowed to be given to any client (delete all ip adress)
     */
     getOPlayerScores(p) {
-        return p.players;
+        let tmp = {};
+
+        let pl = Object.keys(p.players);
+        for (let i = 0; i < pl.length; i++) {
+            tmp[p.players[pl[i]].uuid] = {
+                uuid: p.players[pl[i]].uuid,
+                pseudo: p.players[pl[i]].pseudo,
+                points: p.players[pl[i]].points
+            };
+        }
+
+        return tmp;
     }
 
 

@@ -23,7 +23,7 @@ function init(io) {
 router
     // pages
     .get('/', (req, res) => {
-        res.render('pages/accueil');
+        res.render('pages/accueil', { error: req.query.error });
     })
 
 
@@ -77,6 +77,11 @@ router
         if(!req.query.room_id || !p)
             res.redirect('/');
         else {
+            if(Object.keys(p.players).length >= gameInstance.config.players_count.max) {
+                res.redirect('/?error=1');
+                return;
+            }
+
             if(p.finished)
                 res.redirect(`/game/results?room_id=${req.query.room_id}`);
             else if(!p.began)

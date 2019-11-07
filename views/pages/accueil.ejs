@@ -2,6 +2,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
     let socket = io.connect();
+    let error = "<%= error %>";
 
     socket.on('redirect_user', function(dest) {
         window.location.href = dest;
@@ -11,13 +12,17 @@
     function connect() {
         window.location.href = "/game/waiting?room_id=" + document.getElementById('gamePin').value;
     }
+
+    if(error == 1) {
+        alert("The room in which you tried to enter in was full");
+    }
 </script>
 
 
 <!-- redirection -->
-<a href="/game/configuration">Nouvelle session de jeu</a>
+<a href="/game/configuration">New Game</a>
 
 <!-- on entre le game pin directement sur la page -->
 <br /><br />
 <input id="gamePin" type="text" value="Game pin">
-<button type="submit" onclick="connect()">Connexion</button>
+<button type="submit" onclick="connect()">Connection</button>
