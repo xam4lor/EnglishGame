@@ -3,7 +3,7 @@
 <script type="text/javascript">
     let socket = io.connect();
     let room = "<%= room_id %>";
-    let players_answers = "<%= players_i %>";
+    let players_answers = JSON.parse("<%= players_i %>".replace(/&#34;/g, '"'));
 
     socket.on('connect', function() {
         if(room != "")
