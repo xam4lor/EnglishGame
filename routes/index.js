@@ -137,6 +137,8 @@ router
                 room_id   : req.query.room_id,
                 players_i : JSON.stringify(gameInstance.getOPlayerInfos(p))
             });
+        else
+            console.error("p.game.current_round_id = " + p.game.current_round_id);
     })
 
 
