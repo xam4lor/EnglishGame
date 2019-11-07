@@ -1,9 +1,10 @@
 class GameParty {
-    constructor(io, sentences) {
+    constructor(io, sentences, config) {
         this.party_list = [];
         this.id_list    = [0];
         this.io         = io;
         this.sentences  = sentences;
+        this.config     = config;
 
         // To create a default void party for debugging
         // this.createParty();
@@ -49,6 +50,7 @@ class GameParty {
                 socket_ip: socketId,
                 pseudo: "not implemented yet",
                 last_answer : "",
+                last_answer_round : 0,
                 points : {
                     fastest: 0,
                     popular: 0
@@ -94,6 +96,82 @@ class GameParty {
         }
     }
 
+    /**
+    * Handle a user answer
+    * @param localIp User global ip
+    * @param socketId SocketIo ip
+    * @param roomId Id of the party
+    * @param answer String value of the answer
+    * @param socket the listening socket
+    */
+    handleUserAnswer(localIp, socketId, roomId, answer, socket) {
+        // error
+        let p = this.getParty(roomId);
+        if(!p || p.players[localIp] == undefined || !p.began || p.finished) {
+            socket.emit('game_answer_response', "Your game party is unknown or finished, or you are not part of this game.", true);
+            return;
+        }
+
+
+        // handle
+        if(p.game.current_round_id == 0) { // filled question
+            if(answer.__proto__.constructor.name != "String") {
+                socket.emit('game_answer_response', "Your answer is incorrect.", true);
+                return;
+            }
+
+            // check if answer Valid
+            let ansSpl = answer.split("$$$");
+            if(ansSpl.length != p.game.current_sentence.split("$$$").length - 1) {
+                socket.emit('game_answer_response', "The original sentence changed.", true);
+                return;
+            }
+            for (let i = 0; i < ansSpl.length; i++) {
+                if(
+                       ansSpl[i].length < this.config.chars_per_hole.min
+                    || ansSpl[i].length > this.config.chars_per_hole.max
+                ) {
+                    socket.emit(
+                        'game_answer_response',
+                        `Your answer must contain a minimum of ${this.config.chars_per_hole.min} and a maximum of ${this.config.chars_per_hole.max} chars per hole.`,
+                        true
+                    );
+                    return;
+                }
+            }
+
+
+            // valid answer
+            let cr = p.game.current_round;
+            p.players[localIp].last_answer = answer;
+            p.players[localIp].last_answer_round = cr;
+            socket.emit('game_answer_response', "Valid answer.", false);
+
+
+            // next round ?
+            let rt = 0;
+            let arr = Object.keys(p.players);
+            for (let i = 0; i < arr.length; i++)
+                if(p.players[arr[i]].last_answer_round == cr)
+                    rt++;
+
+            if(rt >= arr.length) {
+                if(p.game.current_round_id == 1) {
+                    this.generateNextSentence(p);
+                    p.game.current_round++;
+                }
+
+                p.game.current_round_id = (p.game.current_round_id + 1) % 2;
+
+                socket.emit('game_reload');
+                socket.broadcast.to(p.id).emit('game_reload');
+            }
+        }
+        else { // vote page
+
+        }
+    }
+
 
 
 
@@ -122,6 +200,7 @@ class GameParty {
                 //     global_ip : "xxxx",
                 //     socket_ip : "xxxx",
                 //     last_answer : "",
+                //     last_answer_round : 0,
                 /** @TODO implement the next line */
                 //     points : {
                 //          fastest: 0,
@@ -162,7 +241,8 @@ class GameParty {
     handleConfig(b) {
         if(
                !b.room_id
-            || !b.round_count || isNaN(b.round_count) || parseInt(b.round_count) < 0
+            || !b.round_count || isNaN(b.round_count)
+            || parseInt(b.round_count) < this.config.rounds.min || parseInt(b.round_count) > this.config.rounds.max
         ) {
             this.party_list.pop();
             this.id_list.pop();
@@ -172,7 +252,7 @@ class GameParty {
         let p = this.getParty(b.room_id);
         if(!p) return false;
 
-        p.config.round_count = parseInt(b.round_count);
+        this.config.round_count = parseInt(b.round_count);
 
         return true;
     }
@@ -185,6 +265,8 @@ class GameParty {
     * @return all informations (for player sentences answers) allowed to be given to any client (delete all ip adress)
     */
     getOPlayerInfos(p) {
+        let tmp = {};
+
         return p.players;
     }
 
@@ -225,6 +307,10 @@ function runSocket(server) {
 
         socket.on('join_room', function(room, isMainUser) {
             gameInstance.joinPlayerTo(adress, socket.id, room, isMainUser, socket);
+        });
+
+        socket.on('user_answer', function(roomId, ans) {
+            gameInstance.handleUserAnswer(adress, socket.id, roomId, ans, socket);
         });
     });
 

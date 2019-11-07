@@ -6,13 +6,14 @@
 const m = {
     express     : require('express'),
     s_io        : require('./socket-io-comms'),
+    config      : require('./../datas/config.json'),
     g_sentences : require('./../datas/sentences.json')
 };
 const router = m.express.Router();
 
 
 function init(io) {
-    global.gameInstance = new m.s_io.party(io, m.g_sentences.game_sentences);
+    global.gameInstance = new m.s_io.party(io, m.g_sentences.game_sentences, m.config.game_config);
 }
 
 
@@ -43,6 +44,11 @@ router
         if(!req.body.room_id || !p || !p.players || !p.players[req.ip] || !p.players[req.ip].is_main_user)
             res.redirect('/');
         else {
+            if(Object.keys(p.players).length < gameInstance.config.players_count.min) {
+                res.redirect(`/game/waiting?room_id=${req.body.room_id}`);
+                return;
+            }
+
             if(!p.began) { // begin party
                 p.began = true;
                 p.game.current_round = 1;
@@ -56,7 +62,12 @@ router
     // game-logic
     .get('/game/configuration', (req, res) => {
         let p = gameInstance.createParty();
-        res.render('game/logic/create_game', { room_id: p.id });
+
+        res.render('game/logic/create_game', {
+            room_id   : p.id,
+            min_round : gameInstance.config.rounds.min,
+            max_round : gameInstance.config.rounds.max
+        });
     })
 
     // waiting for other players
@@ -70,8 +81,10 @@ router
                 res.redirect(`/game/results?room_id=${req.query.room_id}`);
             else if(!p.began)
                 res.render('game/logic/waiting_screen', {
-                    room_id: req.query.room_id,
-                    is_super_admin: gameInstance.isSuperAdmin(req.ip, req.query.room_id)
+                    room_id        : req.query.room_id,
+                    is_super_admin : gameInstance.isSuperAdmin(req.ip, req.query.room_id),
+                    min_players    : gameInstance.config.players_count.min,
+                    max_players    : gameInstance.config.players_count.max
                 });
             else
                 res.redirect(`/game/playing?room_id=${req.query.room_id}`); // redirect to party if party began
@@ -100,7 +113,7 @@ router
             gameInstance.generateNextSentence(p);
 
 
-        if(p.game.current_round == p.config.round_count + 1) {
+        if(p.game.current_round == gameInstance.config.round_count + 1) {
             p.finished = true;
             res.redirect(`/game/results?room_id=${req.query.room_id}`);
             return;
@@ -109,8 +122,10 @@ router
 
         if(p.game.current_round_id == 0)
             res.render('game/playing/answer_page', {
-                room_id   : req.query.room_id,
-                c_sentence: p.game.current_sentence
+                room_id      : req.query.room_id,
+                c_sentence   : p.game.current_sentence,
+                min_chars    : gameInstance.config.chars_per_hole.min,
+                max_chars    : gameInstance.config.chars_per_hole.max
             });
         else if(p.game.current_round_id == 1)
             res.render('game/playing/vote_page', {

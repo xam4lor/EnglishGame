@@ -1,7 +1,28 @@
 {
+    "__TEXT__" : "===== SERVER CONFIG =====",
     "is_https"        : true,
     "site"            : "english-game-mpa.herokuapp.com",
-    "version"         : "1.0.0",
+    "version"         : "1.3",
     "local_port"      : 8080,
-    "cache_time"      : 600000
+    "cache_time"      : 600000,
+
+    "__TEXT__" : "===== GAME CONFIG =====",
+    "game_config" : {
+        "max_answer_t" : 60,
+        "chars_per_hole" : {
+            "min" : 1,
+            "max" : 60
+        },
+        "players_count" : {
+            "min" : 1,
+            "max" : 8
+        },
+        "rounds" : {
+            "min" : 1,
+            "max" : 20
+        },
+        "points" : {
+
+        }
+    }
 }
