@@ -1,8 +1,9 @@
 class GameParty {
-    constructor(io) {
+    constructor(io, sentences) {
         this.party_list = [];
         this.id_list    = [0];
         this.io         = io;
+        this.sentences  = sentences;
 
         // To create a default void party for debugging
         // this.createParty();
@@ -47,6 +48,7 @@ class GameParty {
                 global_ip: localIp,
                 socket_ip: socketId,
                 pseudo: "not implemented yet",
+                last_answer : "",
                 points : {
                     fastest: 0,
                     popular: 0
@@ -77,6 +79,22 @@ class GameParty {
     }
 
 
+    /**
+    * Put the next sentence into the array
+    * @param p the party
+    */
+    generateNextSentence(p) {
+        while(true) {
+            let r = Math.round(Math.random() * this.sentences.length) - 1;
+            if(!p.game.sentences_id_done.includes(r)) {
+                p.game.current_sentence = this.sentences[r];
+                p.game.sentences_id_done.push(r);
+                return;
+            }
+        }
+    }
+
+
 
 
 
@@ -94,26 +112,29 @@ class GameParty {
         let p = {
             id: "r_" + token,
             began: false,
+            finished: false,
             config: { // default and minimal config if any bug occurs
                 round_count : 1
             },
             players: {
                 // "global_ip_xxx": {
-                //     is_main_user: false,
+                //     pseudo : "xxxx",
                 //     global_ip : "xxxx",
                 //     socket_ip : "xxxx",
+                //     last_answer : "",
                 /** @TODO implement the next line */
-                //     pseudo : "xxxx",
                 //     points : {
                 //          fastest: 0,
                 //          popular: 0
                 //     },
+                //     is_main_user: false,
                 //     results_shown: false
                 // }
             },
             game: {
                 current_round: 0,    // first round is 1
                 current_round_id: 0, // 0 for answering and 1 for voting
+                current_sentence: "",
                 sentences_id_done: []
             }
         };
@@ -139,7 +160,10 @@ class GameParty {
     * @return true if values are OK and integrity is verified
     */
     handleConfig(b) {
-        if(!b.room_id || !b.round_count || isNaN(b.round_count) || parseInt(b.round_count) < 0) {
+        if(
+               !b.room_id
+            || !b.round_count || isNaN(b.round_count) || parseInt(b.round_count) < 0
+        ) {
             this.party_list.pop();
             this.id_list.pop();
             return false;
@@ -156,6 +180,21 @@ class GameParty {
 
 
 
+    /**
+    * @param p the party
+    * @return all informations (for player sentences answers) allowed to be given to any client (delete all ip adress)
+    */
+    getOPlayerInfos(p) {
+        return p.players;
+    }
+
+    /**
+    * @param p the party
+    * @return all informations to calculate the total points allowed to be given to any client (delete all ip adress)
+    */
+    getOPlayerScores(p) {
+        return p.players;
+    }
 
 
     /**

@@ -4,14 +4,15 @@
 
 /* ====== DEPENDANCIES ====== */
 const m = {
-    express : require('express'),
-    s_io    : require('./socket-io-comms')
+    express     : require('express'),
+    s_io        : require('./socket-io-comms'),
+    g_sentences : require('./../datas/sentences.json')
 };
 const router = m.express.Router();
 
 
 function init(io) {
-    global.gameInstance = new m.s_io.party(io);
+    global.gameInstance = new m.s_io.party(io, m.g_sentences.game_sentences);
 }
 
 
@@ -65,7 +66,9 @@ router
         if(!req.query.room_id || !p)
             res.redirect('/');
         else {
-            if(!p.began)
+            if(p.finished)
+                res.redirect(`/game/results?room_id=${req.query.room_id}`);
+            else if(!p.began)
                 res.render('game/logic/waiting_screen', {
                     room_id: req.query.room_id,
                     is_super_admin: gameInstance.isSuperAdmin(req.ip, req.query.room_id)
@@ -93,16 +96,27 @@ router
 
 
         // === handle game ===
+        if(p.game.current_round == 1 && p.game.sentences_id_done.length == 0)
+            gameInstance.generateNextSentence(p);
+
+
         if(p.game.current_round == p.config.round_count + 1) {
+            p.finished = true;
             res.redirect(`/game/results?room_id=${req.query.room_id}`);
             return;
         }
 
 
         if(p.game.current_round_id == 0)
-            res.render('game/playing/answer_page');
+            res.render('game/playing/answer_page', {
+                room_id   : req.query.room_id,
+                c_sentence: p.game.current_sentence
+            });
         else if(p.game.current_round_id == 1)
-            res.render('game/playing/vote_page');
+            res.render('game/playing/vote_page', {
+                room_id   : req.query.room_id,
+                players_i : JSON.stringify(gameInstance.getOPlayerInfos(p))
+            });
     })
 
 
@@ -115,7 +129,7 @@ router
         }
 
         p.players[req.ip].results_shown = true;
-        res.render('game/logic/results_game', { pScores: JSON.stringify(p.players) });
+        res.render('game/logic/results_game', { pScores: JSON.stringify(gameInstance.getOPlayerScores(p)) });
 
 
         // if every player saw the results, delete the party
@@ -134,12 +148,12 @@ router
 
 
     // for debugging
-    .get('/debug', (req, res) => {
-        console.log(gameInstance.party_list);
-
-        if(gameInstance.party_list[0])
-            console.log(gameInstance.party_list[0].players);
-    })
+    // .get('/debug', (req, res) => {
+    //     console.log(gameInstance.party_list);
+    //
+    //     if(gameInstance.party_list[0])
+    //         console.log(gameInstance.party_list[0].players);
+    // })
 ;
 
 

@@ -1,1 +1,12 @@
 <!-- EACH USER SHOULD VOTE FOR THE BEST ANSWER -->
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+    let socket = io.connect();
+    let room = "<%= room_id %>";
+    let players_answers = "<%= players_i %>";
+
+    socket.on('connect', function() {
+        if(room != "")
+            socket.emit('join_room', room);
+    });
+</script>

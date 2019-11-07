@@ -1,1 +1,12 @@
 <!-- PAGE ON WHICH THE USER SHOULD FILL IN THE BLANKS -->
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+    let socket = io.connect();
+    let room = "<%= room_id %>";
+    let current_sentence = "<%= c_sentence %>";
+
+    socket.on('connect', function() {
+        if(room != "")
+            socket.emit('join_room', room);
+    });
+</script>
