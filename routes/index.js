@@ -170,12 +170,12 @@ router
 
 
     // for debugging
-    // .get('/debug', (req, res) => {
-    //     console.log(gameInstance.party_list);
-    //
-    //     if(gameInstance.party_list[0])
-    //         console.log(gameInstance.party_list[0].players);
-    // })
+    .get('/debug', (req, res) => {
+        console.log(gameInstance.party_list);
+
+        if(gameInstance.party_list[0])
+            console.log(gameInstance.party_list[0].players);
+    })
 ;
 
 
