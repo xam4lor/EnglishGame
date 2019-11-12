@@ -7,7 +7,7 @@
     "cache_time"       : 600000,
     "cookies" : {
         "hash_length" : 20,
-        "duration"    : 2*60*60*1000
+        "duration"    : 7200000
     },
 
     "__TEXT__" : "===== GAME CONFIG =====",
