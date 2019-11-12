@@ -22,26 +22,42 @@
     });
 
 
+    var inputArr = [];
+
     function submitAnswer() {
-        let ans = document.getElementById('user_answer').value;
+        let ans = "";
+        for (let i = 0; i < inputArr.length; i++) {
+            ans += inputArr[i].value;
+            if(inputArr[i + 1])
+                ans += "$$$";
+        }
+
         socket.emit('user_answer', room, ans);
         // ans = "first hole sentence $$$ second hole sentence"
     }
 
-
     window.onload = function() {
-        document.getElementById('original_sentence').innerHTML = current_sentence;
+        let splSentence = current_sentence.split("$$$");
+        let container = document.getElementById('sentence-container');
+
+        for (let i = 0; i < splSentence.length; i++) {
+            let p = document.createElement("p");
+            p.innerHTML = splSentence[i];
+            container.appendChild(p);
+
+            if(i < splSentence.length - 1) {
+                let inp = document.createElement("input");
+                container.appendChild(inp);
+                inputArr.push(inp);
+            }
+        }
     };
 </script>
 
 <div class="answer_page">
-    <p>Original sentence :</p>
-    <p id="original_sentence"></p>
-
-    <br /><br />
-    <label>Answer here (every hole must contain a number of chars between <%= min_chars %> and <%= max_chars %>) :
-        <br /><input type="text" id="user_answer" />
-    </label>
+    <p>Complete the following sentence (every hole must contain a number of chars between <%= min_chars %> and <%= max_chars %>) :</p>
+    <div id="sentence-container">
+    </div>
 
     <br /><input type="submit" onclick="submitAnswer()" value="Valider">
 </div>
