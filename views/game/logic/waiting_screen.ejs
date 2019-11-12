@@ -20,8 +20,10 @@
     });
 
     window.onload = function() {
-        if(isSuperAdmin)
+        if(isSuperAdmin) {
             document.getElementById('submit_button').style.display = 'unset';
+            document.getElementById('cancel_button').style.display = 'unset';
+        }
 
         if(error && parseInt(error) == 1)
             alert('You must be a minimum of <%= min_players %> and a maximum of <%= max_players %> in order to play.');
@@ -33,6 +35,14 @@
 
 <form action="/req/begin_party" method="post">
     <input style="display: none;" id="submit_button" type="submit" value="Commencer la partie">
+
+    <input style="display: none;" type="text" name="room_id" value="<%= room_id %>">
+</form>
+
+<br />
+
+<form action="/req/cancel_party" method="post">
+    <input style="display: none;" id="cancel_button" type="submit" value="Annuler">
 
     <input style="display: none;" type="text" name="room_id" value="<%= room_id %>">
 </form>

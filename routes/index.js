@@ -55,6 +55,20 @@ router
             res.redirect('/game/configuration');
     })
 
+    // canceling a party while waiting for players
+    .post('/req/cancel_party', (req, res) => {
+        let plUUID = getPlUUIDByRequest(req, res);
+        let p = gameInstance.getParty(req.body.room_id);
+
+        if(!req.body.room_id || !p || !p.players || !p.players[plUUID] || !p.players[plUUID].is_main_user)
+            res.redirect('/');
+        else {
+            gameInstance.deleteParty(p);
+
+            res.redirect('/');
+        }
+    })
+
     // launching of the party
     .post('/req/begin_party', (req, res) => {
         let plUUID = getPlUUIDByRequest(req, res);
