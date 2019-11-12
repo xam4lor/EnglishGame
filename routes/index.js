@@ -4,10 +4,10 @@
 
 /* ====== DEPENDANCIES ====== */
 const m = {
-    express     : require('express'),
-    s_io        : require('./socket-io-comms'),
-    config      : require('./../datas/config.json'),
-    g_sentences : require('./../datas/sentences.json')
+    express         : require('express'),
+    s_io            : require('./socket-io-comms'),
+    config          : require('./../datas/config.json'),
+    g_sentences     : require('./../datas/sentences.json')
 };
 const router = m.express.Router();
 
@@ -20,7 +20,7 @@ function init(io) {
 * @return the player uuid
 */
 function getPlUUIDByRequest(req, res) {
-    return req.ip;
+    return req.cookies._ga;      // UUID USING THE GOOGLE ANALYTICS COOKIE
 }
 
 

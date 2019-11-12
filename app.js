@@ -11,7 +11,9 @@ const m = {
     body_parser    : require('body-parser'),
     config         : require('./datas/config.json'),
     routes         : require('./routes/index'),
-    s_comms        : require('./routes/socket-io-comms')
+    s_comms        : require('./routes/socket-io-comms'),
+    cookie_p       : require('cookie'),
+    cookie_parser  : require('cookie-parser')
 };
 
 
@@ -46,7 +48,7 @@ const HOST_NAME = isLocalHost > -1 ? HTTP_OR_S + HOST : HOST;
 const app = m.express();
 const server = require('http').Server(app);
 
-let io = m.s_comms.runSocket(server); // launches socket-io
+let io = m.s_comms.runSocket(server, m.cookie_p); // launches socket-io
 m.routes.init(io);
 
 
@@ -83,6 +85,7 @@ app
     .use(m.body_parser.urlencoded({
         extended: true
     }))
+    .use(m.cookie_parser());
 
 
 
