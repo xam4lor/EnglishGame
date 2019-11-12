@@ -127,7 +127,7 @@ router
         gameInstance.cleanSpace();
 
         // === check if any error ===
-        if(!req.query.room_id || !p) {
+        if(!req.query.room_id || !p || !p.players || !p.players[plUUID]) {
             res.redirect('/');
             return;
         }
@@ -161,7 +161,8 @@ router
         else if(p.game.current_round_id == 1)
             res.render('game/playing/vote_page', {
                 room_id   : req.query.room_id,
-                players_i : JSON.stringify(gameInstance.getOPlayerInfos(p))
+                players_i : JSON.stringify(gameInstance.getOPlayerInfos(p)),
+                pl_uuid   : p.players[plUUID].uuid
             });
         else
             console.error("p.game.current_round_id = " + p.game.current_round_id);

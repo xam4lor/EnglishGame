@@ -2,6 +2,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
     let socket = io.connect();
+    let perso_uuid = <%= pl_uuid %>;
     let room = "<%= room_id %>";
     let players_answers = JSON.parse("<%= players_i %>".replace(/&#34;/g, '"'));
 
@@ -43,6 +44,8 @@
         for (let i = 0; i < keys.length; i++) {
             let pl = players_answers[keys[i]];
 
+            if(pl.uuid == perso_uuid) continue;
+
             let tOption = document.createElement("option");
             tOption.setAttribute("value", pl.uuid);
 
@@ -62,7 +65,12 @@
             let itemLi = document.createElement('li');
 
             let ansSpl = pl.answer.split("____b____");
-            itemLi.appendChild(document.createTextNode(pl.uuid + " : ")); /** @TODO : display pseudos here */
+
+            let t = pl.uuid;
+            if(pl.uuid == perso_uuid) t += " (you)";
+            t += " : ";
+
+            itemLi.appendChild(document.createTextNode(t)); /** @TODO : display pseudos here */
             for (let i = 0; i < ansSpl.length; i++) {
                 if(i % 2 == 0)
                     itemLi.appendChild(document.createTextNode(ansSpl[i]));
