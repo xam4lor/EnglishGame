@@ -51,7 +51,7 @@ class GameParty {
                 socket_ip: socketId,
                 pseudo: "not implemented yet",
                 last_answer : "",
-                last_answer_round : 0,
+                last_answer_round_id : -1,
                 points : {
                     fastest: 0,
                     popular: 0
@@ -157,14 +157,14 @@ class GameParty {
         // valid answer
         let cr = p.game.current_round;
         p.players[playerUUID].last_answer = answer;
-        p.players[playerUUID].last_answer_round = cr;
+        p.players[playerUUID].last_answer_round = p.game.current_round_id;
         socket.emit('game_answer_response', "Valid answer.", false);
 
         // next round ?
         let rt = 0;
         let arr = Object.keys(p.players);
         for (let i = 0; i < arr.length; i++)
-            if(p.players[arr[i]].last_answer_round == cr)
+            if(p.players[arr[i]].last_answer_round == p.game.current_round_id)
                 rt++;
 
         if(rt >= arr.length) {
@@ -297,7 +297,7 @@ class GameParty {
                 //     global_uuid : "xxxx",
                 //     socket_ip : "xxxx",
                 //     last_answer : "",
-                //     last_answer_round : 0,
+                //     last_answer_round_id : -1,
                 /** @TODO implement the next line */
                 //     points : {
                 //          fastest : 0,
