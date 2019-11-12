@@ -16,6 +16,13 @@ function init(io) {
     global.gameInstance = new m.s_io.party(io, m.g_sentences.game_sentences, m.config.game_config);
 }
 
+/**
+* @return the player uuid
+*/
+function getPlUUIDByRequest(req, res) {
+    return req.ip;
+}
+
 
 
 
@@ -40,8 +47,9 @@ router
     // launching of the party
     .post('/req/begin_party', (req, res) => {
         let p = gameInstance.getParty(req.body.room_id);
+        let plUUID = getPlUUIDByRequest(req, res);
 
-        if(!req.body.room_id || !p || !p.players || !p.players[req.ip] || !p.players[req.ip].is_main_user)
+        if(!req.body.room_id || !p || !p.players || !p.players[plUUID] || !p.players[plUUID].is_main_user)
             res.redirect('/');
         else {
             if(Object.keys(p.players).length < gameInstance.config.players_count.min) {
@@ -73,6 +81,7 @@ router
     // waiting for other players
     .get('/game/waiting', (req, res) => {
         let p = gameInstance.getParty(req.query.room_id);
+        let plUUID = getPlUUIDByRequest(req, res);
 
         if(!req.query.room_id || !p)
             res.redirect('/');
@@ -87,7 +96,7 @@ router
             else if(!p.began)
                 res.render('game/logic/waiting_screen', {
                     room_id        : req.query.room_id,
-                    is_super_admin : gameInstance.isSuperAdmin(req.ip, req.query.room_id),
+                    is_super_admin : gameInstance.isSuperAdmin(plUUID, req.query.room_id),
                     min_players    : gameInstance.config.players_count.min,
                     max_players    : gameInstance.config.players_count.max
                 });
@@ -144,13 +153,14 @@ router
 
     .get('/game/results', (req, res) => {
         let p = gameInstance.getParty(req.query.room_id);
+        let plUUID = getPlUUIDByRequest(req, res);
 
-        if(!req.query.room_id || !p || !p.players || !p.players[req.ip]) {
+        if(!req.query.room_id || !p || !p.players || !p.players[plUUID]) {
             res.redirect('/');
             return;
         }
 
-        p.players[req.ip].results_shown = true;
+        p.players[plUUID].results_shown = true;
         res.render('game/logic/results_game', { pScores: JSON.stringify(gameInstance.getOPlayerScores(p)) });
 
 

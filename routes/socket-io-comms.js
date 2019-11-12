@@ -14,18 +14,18 @@ class GameParty {
 
     /**
     * If already in a game, combine socketIp with globalIp
-    * @param globalIp Global ip
+    * @param playerUUID UUID of the player
     * @param socket Socket thread
     */
-    handleAdress(globalIp, socket) {
+    handleAdress(playerUUID, socket) {
         let socketIp = socket.id;
 
         for (let i = 0; i < this.party_list.length; i++) {
             let p = this.party_list[i];
 
-            if(p.players[globalIp]) {
-                p.players[globalIp].global_ip = globalIp;
-                p.players[globalIp].socket_ip = socketIp;
+            if(p.players[playerUUID]) {
+                p.players[playerUUID].global_uuid = playerUUID;
+                p.players[playerUUID].socket_ip = socketIp;
 
                 socket.emit('redirect_user', '/game/waiting?room_id=' + p.id);
                 break;
@@ -36,18 +36,18 @@ class GameParty {
 
     /**
     * Joins a player to a specific party
-    * @param localIp User global ip
+    * @param playerUUID User global UUID
     * @param socketId SocketIo ip
     * @param roomId Id of the party
     * @param isMainUser true if the user is the main user of the party
     * @param socket the listening socket
     */
-    joinPlayerTo(localIp, socketId, roomId, isMainUser, socket) {
+    joinPlayerTo(playerUUID, socketId, roomId, isMainUser, socket) {
         let pa = this.getParty(roomId);
-        if(pa && pa.players[localIp] == undefined) {
-            pa.players[localIp] = {
+        if(pa && pa.players[playerUUID] == undefined) {
+            pa.players[playerUUID] = {
                 uuid: pa.config.next_player_uuid,
-                global_ip: localIp,
+                global_uuid: playerUUID,
                 socket_ip: socketId,
                 pseudo: "not implemented yet",
                 last_answer : "",
@@ -56,11 +56,11 @@ class GameParty {
                     fastest: 0,
                     popular: 0
                 },
-                results_shown: false
+                results_shown: false,
+                is_main_user: isMainUser
             };
-            pa.config.next_player_uuid++;
 
-            if(isMainUser) pa.players[localIp].is_main_user = isMainUser;
+            pa.config.next_player_uuid++;
 
             socket.broadcast.to(roomId).emit('new_player', Object.keys(pa.players).length);
         }
@@ -70,14 +70,14 @@ class GameParty {
 
 
     /**
-    * @param localIp the ip to be tested
+    * @param playerUUID the UUID to be tested
     * @param roomId
     * @return true if the user is the super admin of the party
     */
-    isSuperAdmin(localIp, roomId) {
+    isSuperAdmin(playerUUID, roomId) {
         let pa = this.getParty(roomId);
 
-        if(pa && pa.players && pa.players[localIp] != undefined && pa.players[localIp] && pa.players[localIp].is_main_user)
+        if(pa && pa.players && pa.players[playerUUID] != undefined && pa.players[playerUUID] && pa.players[playerUUID].is_main_user)
             return true;
         return false;
     }
@@ -100,16 +100,16 @@ class GameParty {
 
     /**
     * Handle a user answer
-    * @param localIp User global ip
+    * @param playerUUID User global UUID
     * @param socketId SocketIo ip
     * @param roomId Id of the party
     * @param answer String value of the answer
     * @param socket the listening socket
     */
-    handleUserAnswer(localIp, socketId, roomId, answer, socket) {
+    handleUserAnswer(playerUUID, socketId, roomId, answer, socket) {
         // error
         let p = this.getParty(roomId);
-        if(!p || p.players[localIp] == undefined || !p.began || p.finished) {
+        if(!p || p.players[playerUUID] == undefined || !p.began || p.finished) {
             socket.emit('game_answer_response', "Your game party is unknown or finished, or you are not part of this game.", true);
             return;
         }
@@ -149,15 +149,15 @@ class GameParty {
                 return;
             }
 
-            p.game.current_fastest_id   .push(p.players[localIp].uuid);
+            p.game.current_fastest_id   .push(p.players[playerUUID].uuid);
             p.game.current_popular_votes.push(parseInt(answer));
         }
 
 
         // valid answer
         let cr = p.game.current_round;
-        p.players[localIp].last_answer = answer;
-        p.players[localIp].last_answer_round = cr;
+        p.players[playerUUID].last_answer = answer;
+        p.players[playerUUID].last_answer_round = cr;
         socket.emit('game_answer_response', "Valid answer.", false);
 
         // next round ?
@@ -291,10 +291,10 @@ class GameParty {
                 next_player_uuid : 0
             },
             players : {
-                // "global_ip_xxx" : {
+                // "global_uuid_xxx" : {
                 //     uuid : 0,
                 //     pseudo : "xxxx",
-                //     global_ip : "xxxx",
+                //     global_uuid : "xxxx",
                 //     socket_ip : "xxxx",
                 //     last_answer : "",
                 //     last_answer_round : 0,
