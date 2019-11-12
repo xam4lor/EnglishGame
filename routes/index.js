@@ -7,7 +7,8 @@ const m = {
     express         : require('express'),
     s_io            : require('./socket-io-comms'),
     config          : require('./../datas/config.json'),
-    g_sentences     : require('./../datas/sentences.json')
+    g_sentences     : require('./../datas/sentences.json'),
+    crypto          : require('crypto')
 };
 const router = m.express.Router();
 
@@ -20,7 +21,14 @@ function init(io) {
 * @return the player uuid
 */
 function getPlUUIDByRequest(req, res) {
-    return req.cookies._ga;      // UUID USING THE GOOGLE ANALYTICS COOKIE
+    if(req.cookies._gameUUID) {
+        return req.cookies._gameUUID;
+    }
+
+    let r = m.crypto.randomBytes(20).toString('hex');
+    res.cookie('_gameUUID', r, { maxAge: 60*60*6 });
+
+    return r;
 }
 
 
@@ -30,12 +38,15 @@ function getPlUUIDByRequest(req, res) {
 router
     // pages
     .get('/', (req, res) => {
+        let plUUID = getPlUUIDByRequest(req, res);
+
         res.render('pages/accueil', { error: req.query.error });
     })
 
 
     // send game super-user config
     .post('/req/set_config', (req, res) => {
+        let plUUID = getPlUUIDByRequest(req, res);
         let ans = gameInstance.handleConfig(req.body); // true if no errors
 
         if(ans)
@@ -46,8 +57,8 @@ router
 
     // launching of the party
     .post('/req/begin_party', (req, res) => {
-        let p = gameInstance.getParty(req.body.room_id);
         let plUUID = getPlUUIDByRequest(req, res);
+        let p = gameInstance.getParty(req.body.room_id);
 
         if(!req.body.room_id || !p || !p.players || !p.players[plUUID] || !p.players[plUUID].is_main_user)
             res.redirect('/');
@@ -69,6 +80,7 @@ router
 
     // game-logic
     .get('/game/configuration', (req, res) => {
+        let plUUID = getPlUUIDByRequest(req, res);
         let p = gameInstance.createParty();
 
         res.render('game/logic/create_game', {
@@ -80,8 +92,8 @@ router
 
     // waiting for other players
     .get('/game/waiting', (req, res) => {
-        let p = gameInstance.getParty(req.query.room_id);
         let plUUID = getPlUUIDByRequest(req, res);
+        let p = gameInstance.getParty(req.query.room_id);
 
         if(!req.query.room_id || !p)
             res.redirect('/');
@@ -107,6 +119,7 @@ router
 
     // game-playing
     .get('/game/playing', (req, res) => {
+        let plUUID = getPlUUIDByRequest(req, res);
         let p = gameInstance.getParty(req.query.room_id);
 
         // === check if any error ===
@@ -152,8 +165,8 @@ router
 
 
     .get('/game/results', (req, res) => {
-        let p = gameInstance.getParty(req.query.room_id);
         let plUUID = getPlUUIDByRequest(req, res);
+        let p = gameInstance.getParty(req.query.room_id);
 
         if(!req.query.room_id || !p || !p.players || !p.players[plUUID]) {
             res.redirect('/');

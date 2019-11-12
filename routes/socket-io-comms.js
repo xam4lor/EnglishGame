@@ -437,10 +437,11 @@ function runSocket(server, cookie_parser) {
     io.sockets.on('connection', function(socket) {
         // Handle cookies
         let cookies = cookie_parser.parse(socket.handshake.headers.cookie);
-        let uuid = cookies._ga;     // UUID USING THE GOOGLE ANALYTICS COOKIE
+        let uuid = cookies._gameUUID;
+
+        if(!uuid) return;
 
         gameInstance.handleAdress(uuid, socket);
-
 
         socket.on('join_room', function(room, isMainUser) {
             gameInstance.joinPlayerTo(uuid, socket.id, room, isMainUser, socket);
