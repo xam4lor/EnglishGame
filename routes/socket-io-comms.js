@@ -149,6 +149,11 @@ class GameParty {
                 return;
             }
 
+            if(parseInt(answer) == p.players[playerUUID].uuid)  {
+                socket.emit('game_answer_response', "You can't vote for yourself.", true);
+                return;
+            }
+
             p.game.current_fastest_id   .push(p.players[playerUUID].uuid);
             p.game.current_popular_votes.push(parseInt(answer));
         }
