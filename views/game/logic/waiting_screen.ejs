@@ -11,6 +11,10 @@
             socket.emit('join_room', room);
     });
 
+    socket.on('game_reload', function() {
+        document.location.reload();
+    });
+
     socket.on('new_player', function(player_total_count) {
         alert(`A new player has come. Total player count is now ${player_total_count}.`);
     });

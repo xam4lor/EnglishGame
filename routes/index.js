@@ -73,6 +73,7 @@ router
                 p.game.current_round = 1;
             }
 
+            gameInstance.io.to(p.id).emit('game_reload');
             res.redirect(`/game/playing?room_id=${req.body.room_id}`); // redirect to party if party began
         }
     })
