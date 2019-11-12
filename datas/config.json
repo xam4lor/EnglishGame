@@ -14,7 +14,7 @@
             "max" : 60
         },
         "players_count" : {
-            "min" : 1,
+            "min" : 2,
             "max" : 8
         },
         "rounds" : {
