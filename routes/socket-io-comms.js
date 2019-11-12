@@ -308,8 +308,9 @@ class GameParty {
                 // }
             },
             game : {
-                current_round : 0,    // first round is 1
-                current_round_id : 0, // 0 for answering and 1 for voting
+                created_timestamp : Date.now(),     // in milliseconds
+                current_round : 0,                  // first round is 1
+                current_round_id : 0,               // 0 for answering and 1 for voting
                 current_sentence : "",
                 current_fastest_id : [],
                 current_popular_votes : [],
@@ -336,6 +337,15 @@ class GameParty {
     */
     deleteParty(party) {
         this.party_list.pop(party);
+    }
+
+    /**
+    * Delete all party that were created more than x time ago
+    */
+    cleanSpace() {
+        for (let i = 0; i < this.party_list.length; i++)
+            if(Date.now() - this.party_list[i].game.created_timestamp > this.config.max_party_duration)
+                this.deleteParty(this.party_list[i])
     }
 
 

@@ -38,6 +38,7 @@ router
     // pages
     .get('/', (req, res) => {
         let plUUID = getPlUUIDByRequest(req, res);
+        gameInstance.cleanSpace();
 
         res.render('pages/accueil', { error: req.query.error });
     })
@@ -93,6 +94,7 @@ router
     .get('/game/waiting', (req, res) => {
         let plUUID = getPlUUIDByRequest(req, res);
         let p = gameInstance.getParty(req.query.room_id);
+        gameInstance.cleanSpace();
 
         if(!req.query.room_id || !p)
             res.redirect('/');
@@ -120,6 +122,7 @@ router
     .get('/game/playing', (req, res) => {
         let plUUID = getPlUUIDByRequest(req, res);
         let p = gameInstance.getParty(req.query.room_id);
+        gameInstance.cleanSpace();
 
         // === check if any error ===
         if(!req.query.room_id || !p) {
