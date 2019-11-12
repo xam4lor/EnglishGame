@@ -15,10 +15,16 @@
     });
 
     socket.on('game_answer_response', function(message, error) {
-        if(error)
+        if(error) {
+            alert('Error: ' + error);
             console.error(message);
-        else
+        }
+        else {
             console.log(message);
+
+            if(code == 1)
+                alert('Waiting for the others to answer...');
+        }
     });
 
 

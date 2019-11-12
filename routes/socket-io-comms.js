@@ -158,7 +158,7 @@ class GameParty {
         let cr = p.game.current_round;
         p.players[playerUUID].last_answer = answer;
         p.players[playerUUID].last_answer_round = p.game.current_round_id;
-        socket.emit('game_answer_response', "Valid answer.", false);
+        socket.emit('game_answer_response', "Valid answer.", false, 1);
 
         // next round ?
         let rt = 0;
