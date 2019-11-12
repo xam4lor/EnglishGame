@@ -21,13 +21,11 @@ function init(io) {
 * @return the player uuid
 */
 function getPlUUIDByRequest(req, res) {
-    console.log(req.cookies);
-    if(req.cookies._gameUUID) {
+    if(req.cookies._gameUUID)
         return req.cookies._gameUUID;
-    }
 
-    let r = m.crypto.randomBytes(m.config.hash_cookie_size * 2).toString('hex');
-    res.cookie('_gameUUID', r, { maxAge: 60*60*6 });
+    let r = m.crypto.randomBytes(m.config.cookies.hash_length * 2).toString('hex');
+    res.cookie('_gameUUID', r, { maxAge: m.config.cookies.duration });
 
     return r;
 }
