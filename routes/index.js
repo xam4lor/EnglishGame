@@ -21,6 +21,7 @@ function init(io) {
 * @return the player uuid
 */
 function getPlUUIDByRequest(req, res) {
+    console.log(req.cookies);
     if(req.cookies._gameUUID) {
         return req.cookies._gameUUID;
     }
