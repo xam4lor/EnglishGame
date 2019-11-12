@@ -4,6 +4,7 @@
     let socket = io.connect();
     let room = "<%= room_id %>";
     let isSuperAdmin = <%= is_super_admin %>;
+    let error = "<%= error %>";
 
     socket.on('connect', function() {
         if(room != "")
@@ -17,6 +18,9 @@
     window.onload = function() {
         if(isSuperAdmin)
             document.getElementById('submit_button').style.display = 'unset';
+
+        if(error && parseInt(error) == 1)
+            alert('You must be a minimum of <%= min_players %> and a maximum of <%= max_players %> in order to play.');
     };
 </script>
 

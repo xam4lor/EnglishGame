@@ -64,7 +64,7 @@ router
             res.redirect('/');
         else {
             if(Object.keys(p.players).length < gameInstance.config.players_count.min) {
-                res.redirect(`/game/waiting?room_id=${req.body.room_id}`);
+                res.redirect(`/game/waiting?room_id=${req.body.room_id}&error=1`);
                 return;
             }
 
@@ -111,7 +111,8 @@ router
                     room_id        : req.query.room_id,
                     is_super_admin : gameInstance.isSuperAdmin(plUUID, req.query.room_id),
                     min_players    : gameInstance.config.players_count.min,
-                    max_players    : gameInstance.config.players_count.max
+                    max_players    : gameInstance.config.players_count.max,
+                    error          : req.query.error
                 });
             else
                 res.redirect(`/game/playing?room_id=${req.query.room_id}`); // redirect to party if party began
