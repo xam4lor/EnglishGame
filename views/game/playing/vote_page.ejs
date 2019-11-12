@@ -16,7 +16,7 @@
 
     socket.on('game_answer_response', function(message, error) {
         if(error) {
-            alert('Error: ' + error);
+            alert('Error :' + message);
             console.error(message);
         }
         else {
