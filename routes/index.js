@@ -25,7 +25,7 @@ function getPlUUIDByRequest(req, res) {
         return req.cookies._gameUUID;
     }
 
-    let r = m.crypto.randomBytes(config.hash_cookie_size * 2).toString('hex');
+    let r = m.crypto.randomBytes(m.config.hash_cookie_size * 2).toString('hex');
     res.cookie('_gameUUID', r, { maxAge: 60*60*6 });
 
     return r;
