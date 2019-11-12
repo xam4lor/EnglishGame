@@ -1,10 +1,11 @@
 {
     "__TEXT__" : "===== SERVER CONFIG =====",
-    "is_https"        : true,
-    "site"            : "english-game-mpa.herokuapp.com",
-    "version"         : "1.3",
-    "local_port"      : 8080,
-    "cache_time"      : 600000,
+    "is_https"         : true,
+    "site"             : "english-game-mpa.herokuapp.com",
+    "version"          : "1.3",
+    "local_port"       : 8080,
+    "cache_time"       : 600000,
+    "hash_cookie_size" : 20
 
     "__TEXT__" : "===== GAME CONFIG =====",
     "game_config" : {
