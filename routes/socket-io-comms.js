@@ -252,12 +252,11 @@ class GameParty {
         }
 
         let tmpFScoresK = Object.keys(finalScore);
-        finalScoreKeys = Object.keys(finalScore);
 
         let highest = Number.NEGATIVE_INFINITY;
-        for (let i = 0; i < finalScoreKeys.length; i++) {
-        	if(parseInt(finalScoreKeys[i]) > highest)
-        		highest = parseInt(finalScoreKeys[i]);
+        for (let i = 0; i < tmpFScoresK.length; i++) {
+        	if(parseInt(tmpFScoresK[i]) > highest)
+        		highest = parseInt(tmpFScoresK[i]);
         }
 
         for (let i = 0; i < highest + 1; i++) {
