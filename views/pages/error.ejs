@@ -1,8 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <div>
-        <p>Error <%= errorCode %></p>
-        <hr />
-        <p><%= errorMessage %></p>
-    </div>
+    <head>
+        <%- include('../partial/head') %>
+
+        <script type="text/javascript">
+            let socket = io.connect();
+        </script>
+    </head>
+
+    <body>
+        <header>
+            <%- include('../partial/header') %>
+        </header>
+
+
+        <main>
+            <div class="m-section">
+                <!-- Tu peux modifier qu'à partir d'ici sinon je te décapite -->
+                <p>Error <%= errorCode %></p>
+                <hr />
+                <p><%= errorMessage %></p>
+            </div>
+        </main>
+
+
+        <%- include('../partial/footer') %>
+    </body>
 </html>

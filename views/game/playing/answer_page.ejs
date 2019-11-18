@@ -1,69 +1,39 @@
-<!-- PAGE ON WHICH THE USER SHOULD FILL IN THE BLANKS -->
-<script src="/socket.io/socket.io.js"></script>
-<script type="text/javascript">
-    let socket = io.connect();
-    let room = "<%= room_id %>";
-    let current_sentence = "<%= c_sentence %>";
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <%- include('../../partial/head') %>
 
-    socket.on('connect', function() {
-        if(room != "")
-            socket.emit('join_room', room);
-    });
+        <script type="text/javascript">
+            let socket = io.connect();
+            let room = "<%= room_id %>";
+            let current_sentence = "<%= c_sentence %>";
+        </script>
 
-    socket.on('game_reload', function() {
-        document.location.reload();
-    });
+        <script src="/js/answer_page.js" charset="utf-8"></script>
+    </head>
 
-    socket.on('game_answer_response', function(message, error, code) {
-        if(error) {
-            alert('Error :' + message);
-            console.error(message);
-        }
-        else {
-            console.log(message);
-
-            if(code == 1)
-                alert('Waiting for the others to answer...');
-        }
-    });
+    <body>
+        <header>
+            <%- include('../../partial/header') %>
+        </header>
 
 
-    var inputArr = [];
+        <main>
+            <div class="m-section">
+                <!-- Tu peux modifier qu'à partir d'ici sinon je te décapite -->
+                <div class="answer_page">
+                    <p>Complete the following sentence (every hole must contain a number of chars between <%= min_chars %> and <%= max_chars %>) :</p>
 
-    function submitAnswer() {
-        let ans = "";
-        for (let i = 0; i < inputArr.length; i++) {
-            ans += inputArr[i].value;
-            if(inputArr[i + 1])
-                ans += "$$$";
-        }
+                    <div id="sentence-container"></div><!-- Do not delete anything -->
 
-        socket.emit('user_answer', room, ans);
-        // ans = "first hole sentence $$$ second hole sentence"
-    }
+                    <br />
 
-    window.onload = function() {
-        let splSentence = current_sentence.split("$$$");
-        let container = document.getElementById('sentence-container');
+                    <input type="submit" onclick="submitAnswer()" value="Submit"><!-- Do not delete the 'onclick' param -->
+                </div>
+            </div>
+        </main>
 
-        for (let i = 0; i < splSentence.length; i++) {
-            let p = document.createElement("p");
-            p.innerHTML = splSentence[i];
-            container.appendChild(p);
 
-            if(i < splSentence.length - 1) {
-                let inp = document.createElement("input");
-                container.appendChild(inp);
-                inputArr.push(inp);
-            }
-        }
-    };
-</script>
-
-<div class="answer_page">
-    <p>Complete the following sentence (every hole must contain a number of chars between <%= min_chars %> and <%= max_chars %>) :</p>
-    <div id="sentence-container">
-    </div>
-
-    <br /><input type="submit" onclick="submitAnswer()" value="Valider">
-</div>
+        <%- include('../../partial/footer') %>
+    </body>
+</html>

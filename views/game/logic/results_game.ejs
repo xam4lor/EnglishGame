@@ -1,29 +1,33 @@
-<!-- SHOWS THE PLAYERS CLASSMENT ORDER AND SOME BUTTONS ON WHAT TO DO NEXT -->
-<script src="/socket.io/socket.io.js"></script>
-<script type="text/javascript">
-    let socket = io.connect();
-    let pScores = JSON.parse("<%= pScores %>".replace(/&#34;/g, '"'));
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <%- include('../../partial/head') %>
 
-    window.onload = function() {
-        let allCount = Object.keys(pScores);
+        <script type="text/javascript">
+            let socket = io.connect();
+            let pScores = JSON.parse("<%= pScores %>".replace(/&#34;/g, '"'));
+        </script>
 
-        let liEl = document.getElementById('scores_show');
-        for (let i = 0; i < allCount.length; i++) {
-            let itemLi = document.createElement('li');
+        <script src="/js/results_game.js" charset="utf-8"></script>
+    </head>
 
-            itemLi.appendChild(document.createTextNode("Player " + pScores[allCount[i]].uuid + " : ")); /** @TODO : display pseudos here */
-            itemLi.appendChild(document.createTextNode("  Total : " + Math.round(pScores[allCount[i]].points.fastest + pScores[allCount[i]].points.popular)));
-            itemLi.appendChild(document.createTextNode("  Score popular : " + Math.round(pScores[allCount[i]].points.popular)));
-            itemLi.appendChild(document.createTextNode("  Score fastest : " + Math.round(pScores[allCount[i]].points.fastest)));
-
-            liEl.appendChild(itemLi);
-        }
-    }
-</script>
+    <body>
+        <header>
+            <%- include('../../partial/header') %>
+        </header>
 
 
-<div class="scores">
-    <p>Résultats :</p>
-    <div id="scores_show">
-    </div>
-</div>
+        <main>
+            <div class="m-section">
+                <!-- Tu peux modifier qu'à partir d'ici sinon je te décapite -->
+                <div class="scores">
+                    <p>Résultats :</p>
+                    <div id="scores_show"></div><!-- Do not delete the 'id' param -->
+                </div>
+            </div>
+        </main>
+
+
+        <%- include('../../partial/footer') %>
+    </body>
+</html>

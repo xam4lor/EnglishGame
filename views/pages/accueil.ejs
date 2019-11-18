@@ -1,28 +1,34 @@
-<!-- WEBSITE INDEX PAGE -->
-<script src="/socket.io/socket.io.js"></script>
-<script type="text/javascript">
-    let socket = io.connect();
-    let error = "<%= error %>";
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <%- include('../partial/head') %>
 
-    socket.on('redirect_user', function(dest) {
-        window.location.href = dest;
-    });
+        <script type="text/javascript">
+            let socket = io.connect();
+            let error = "<%= error %>";
+        </script>
 
+        <script src="/js/main.js" charset="utf-8"></script>
+    </head>
 
-    function connect() {
-        window.location.href = "/game/waiting?room_id=" + document.getElementById('gamePin').value;
-    }
-
-    if(error == 1) {
-        alert("The room in which you tried to enter in was full");
-    }
-</script>
+    <body>
+        <header>
+            <%- include('../partial/header') %>
+        </header>
 
 
-<!-- redirection -->
-<a href="/game/configuration">New Game</a>
+        <main>
+            <div class="m-section">
+                <!-- Tu peux modifier qu'à partir d'ici sinon je te décapite -->
+                <a href="/game/configuration">New Game</a>
 
-<!-- on entre le game pin directement sur la page -->
-<br /><br />
-<input id="gamePin" type="text" value="Game pin">
-<button type="submit" onclick="connect()">Connection</button>
+                <br /><br />
+                <input id="gamePin" type="text" value="Game pin"><!-- Do not delete the 'id' param -->
+                <button type="submit" onclick="connect()">Connection</button><!-- Do not delete the 'onclick' param -->
+            </div>
+        </main>
+
+
+        <%- include('../partial/footer') %>
+    </body>
+</html>

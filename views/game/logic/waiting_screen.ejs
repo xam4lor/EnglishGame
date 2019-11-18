@@ -1,48 +1,48 @@
-<!-- WAITING FOR OTHER PLAYERS -->
-<script src="/socket.io/socket.io.js"></script>
-<script type="text/javascript">
-    let socket = io.connect();
-    let room = "<%= room_id %>";
-    let isSuperAdmin = <%= is_super_admin %>;
-    let error = "<%= error %>";
+<!DOCTYPE html><!-- PAGE ON WHICH THE USER SHOULD FILL IN THE BLANKS -->
+<html lang="fr">
+    <head>
+        <%- include('../../partial/head') %>
 
-    socket.on('connect', function() {
-        if(room != "")
-            socket.emit('join_room', room);
-    });
+        <script type="text/javascript">
+            let socket = io.connect();
+            let room = "<%= room_id %>";
+            let isSuperAdmin = <%= is_super_admin %>;
+            let error = "<%= error %>";
+            let max_players = <%= max_players %>;
+            let min_players = <%= min_players %>;
+        </script>
 
-    socket.on('game_reload', function() {
-        document.location.reload();
-    });
+        <script src="/js/waiting_screen.js" charset="utf-8"></script>
+    </head>
 
-    socket.on('new_player', function(player_total_count) {
-        alert(`A new player has come. Total player count is now ${player_total_count}.`);
-    });
-
-    window.onload = function() {
-        if(isSuperAdmin) {
-            document.getElementById('submit_button').style.display = 'unset';
-            document.getElementById('cancel_button').style.display = 'unset';
-        }
-
-        if(error && parseInt(error) == 1)
-            alert('You must be a minimum of <%= min_players %> and a maximum of <%= max_players %> in order to play.');
-    };
-</script>
+    <body>
+        <header>
+            <%- include('../../partial/header') %>
+        </header>
 
 
-<p>Waiting for other players... You must be a minimum of <%= min_players %> and a maximum of <%= max_players %> in order to play.</p>
+        <main>
+            <div class="m-section">
+                <!-- Tu peux modifier qu'à partir d'ici sinon je te décapite -->
+                <p>Waiting for other players... You must be a minimum of <%= min_players %> and a maximum of <%= max_players %> in order to play.</p>
 
-<form action="/req/begin_party" method="post">
-    <input style="display: none;" id="submit_button" type="submit" value="Commencer la partie">
+                <form action="/req/begin_party" method="post">
+                    <input style="display: none;" id="submit_button" type="submit" value="Commencer la partie"><!-- Do not delete the 'value' and 'id' param -->
 
-    <input style="display: none;" type="text" name="room_id" value="<%= room_id %>">
-</form>
+                    <input style="display: none;" type="text" name="room_id" value="<%= room_id %>"><!-- Do not delete the 'value' and 'name' param -->
+                </form>
 
-<br />
+                <br />
 
-<form action="/req/cancel_party" method="post">
-    <input style="display: none;" id="cancel_button" type="submit" value="Annuler">
+                <form action="/req/cancel_party" method="post">
+                    <input style="display: none;" id="cancel_button" type="submit" value="Annuler"><!-- Do not delete the 'value' and 'id' param -->
 
-    <input style="display: none;" type="text" name="room_id" value="<%= room_id %>">
-</form>
+                    <input style="display: none;" type="text" name="room_id" value="<%= room_id %>"><!-- Do not delete the 'value' and 'name' param -->
+                </form>
+            </div>
+        </main>
+
+
+        <%- include('../../partial/footer') %>
+    </body>
+</html>

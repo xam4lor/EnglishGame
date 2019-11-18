@@ -1,22 +1,39 @@
-<!-- CREATE A NEW GAME AND SHOWS THE GAME CONFIGURATION -->
-<script src="/socket.io/socket.io.js"></script>
-<script type="text/javascript">
-    let socket = io.connect();
-    let room = "<%= room_id %>";
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <%- include('../../partial/head') %>
 
-    socket.on('connect', function() {
-        if(room != "")
-            socket.emit('join_room', room, true);
-    });
-</script>
+        <script type="text/javascript">
+            let socket = io.connect();
+            let room = "<%= room_id %>";
+        </script>
 
-<form action="/req/set_config" method="post">
-    <p>CONFIGURATION</p>
-    <label>Choose a number between <%= min_round %> and <%= max_round %>.
-        <input name="round_count" type="text" placeholder="Nombre de rounds" />
-    </label>
+        <script src="/js/create_game.js" charset="utf-8"></script>
+    </head>
 
-    <input style="display: none;" name="room_id" type="text" value="<%= room_id %>" />
+    <body>
+        <header>
+            <%- include('../../partial/header') %>
+        </header>
 
-    <input type="submit" value="Valider">
-</form>
+
+        <main>
+            <div class="m-section">
+                <!-- Tu peux modifier qu'à partir d'ici sinon je te décapite -->
+                <form action="/req/set_config" method="post">
+                    <p>CONFIGURATION</p>
+                    <label>Choose a number between <%= min_round %> and <%= max_round %>.
+                        <input name="round_count" type="text" placeholder="Nombre de rounds" />
+                    </label>
+
+                    <input style="display: none;" name="room_id" type="text" value="<%= room_id %>" />
+
+                    <input type="submit" value="Valider">
+                </form>
+            </div>
+        </main>
+
+
+        <%- include('../../partial/footer') %>
+    </body>
+</html>
