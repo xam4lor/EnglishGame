@@ -218,7 +218,6 @@ class GameParty {
 
         let tmpObjK = Object.keys(tmpObj);
         tmpObjK.sort(function(a, b) { return b-a });  // best_uuid, second best_uuid, ...
-        console.log(tmpObjK);
 
         let finalScore = {};
         let counter = 1;
@@ -251,25 +250,23 @@ class GameParty {
                 }
             }
         }
-        console.log(tmpObjK);
-        console.log(finalScore);
 
         let tmpFScoresK = Object.keys(finalScore);
+        finalScoreKeys = Object.keys(finalScore);
+
         let highest = Number.NEGATIVE_INFINITY;
-        for (let i = 0; i < tmpFScoresK.length; i++) {
-            if(tmpFScoresK[i] > highest)
-                highest = tmpFScoresK[i];
+        for (let i = 0; i < finalScoreKeys.length; i++) {
+        	if(parseInt(finalScoreKeys[i]) > highest)
+        		highest = parseInt(finalScoreKeys[i]);
         }
-        console.log(finalScore);
 
         for (let i = 0; i < highest + 1; i++) {
             if(finalScore[i]) {
+                let bestScoreTmp = p.points.best(kPlayer.length, i, this.config);
                 for (let j = 0; j < finalScore[i].length; j++) {
-                    let score = p.points.best(kPlayer.length, i, this.config);
-
                     for (let k = 0; k < kPlayer.length; k++)
-                        if(p.players[kPlayer[j]].uuid == finalScore[i][j]) {
-                            p.players[kPlayer[j]].points.popular += score;
+                        if(p.players[kPlayer[k]].uuid == finalScore[i][j]) {
+                            p.players[kPlayer[k]].points.popular += bestScoreTmp;
                             break;
                         }
                 }
