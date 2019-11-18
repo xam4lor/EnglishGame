@@ -15,7 +15,7 @@
         document.location.reload();
     });
 
-    socket.on('game_answer_response', function(message, error) {
+    socket.on('game_answer_response', function(message, error, code) {
         if(error) {
             alert('Error :' + message);
             console.error(message);
