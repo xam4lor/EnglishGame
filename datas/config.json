@@ -1,7 +1,7 @@
 {
     "__TEXT__" : "===== SERVER CONFIG =====",
     "is_https"         : true,
-    "site"             : "english-game-mpa.herokuapp.com",
+    "site"             : "fill-gaps.herokuapp.com",
     "version"          : "1.3",
     "local_port"       : 8080,
     "cache_time"       : 600000,
