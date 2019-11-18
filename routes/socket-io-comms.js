@@ -218,6 +218,7 @@ class GameParty {
 
         let tmpObjK = Object.keys(tmpObj);
         tmpObjK.sort(function(a, b) { return b-a });  // best_uuid, second best_uuid, ...
+        console.log(tmpObjK);
 
         let finalScore = {};
         let counter = 1;
@@ -322,11 +323,11 @@ class GameParty {
                 sentences_id_done : []
             },
             points : {
-                best : function(players_count, p_rank) {
-                    return (players_count - p_rank + 1) * 50;
+                best : function(players_count, p_rank, config) {
+                    return (players_count - p_rank + 1) * config.points.best_Coeff;
                 },
                 fastest : function(players_count, p_rank, config) {
-                    return this.best(players_count, p_rank) / config.points.fastest_N;
+                    return (players_count - p_rank + 1) * config.points.fastest_Coeff;
                 }
             }
         };

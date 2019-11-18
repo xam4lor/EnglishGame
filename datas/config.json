@@ -26,7 +26,8 @@
             "max" : 20
         },
         "points" : {
-            "fastest_N" : 3
+            "fastest_Coeff" : 1,
+            "best_Coeff" : 3
         },
         "max_party_duration": 86400000
     }
