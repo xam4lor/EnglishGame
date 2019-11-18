@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 8080;
 
 
 /* ====== SERVER ====== */
-const server = app.listen(PORT, () => console.log(`Le serveur tourne sur le port ${ PORT } (@see 'localhost:${ PORT }')... Faites un effort quoi :/`));
+const server = app.listen(PORT, () => console.log(`Server runs on 'localhost:${ PORT }'`));
 
 
 /**

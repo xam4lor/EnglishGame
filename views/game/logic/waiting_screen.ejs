@@ -27,7 +27,7 @@
                 <p>Waiting for other players... You must be a minimum of <%= min_players %> and a maximum of <%= max_players %> in order to play.</p>
 
                 <form action="/req/begin_party" method="post">
-                    <input style="display: none;" id="submit_button" type="submit" value="Commencer la partie"><!-- Do not delete the 'value' and 'id' param -->
+                    <input style="display: none;" id="submit_button" type="submit" value="Start playing"><!-- Do not delete the 'value' and 'id' param -->
 
                     <input style="display: none;" type="text" name="room_id" value="<%= room_id %>"><!-- Do not delete the 'value' and 'name' param -->
                 </form>
@@ -35,7 +35,7 @@
                 <br />
 
                 <form action="/req/cancel_party" method="post">
-                    <input style="display: none;" id="cancel_button" type="submit" value="Annuler"><!-- Do not delete the 'value' and 'id' param -->
+                    <input style="display: none;" id="cancel_button" type="submit" value="Cancel"><!-- Do not delete the 'value' and 'id' param -->
 
                     <input style="display: none;" type="text" name="room_id" value="<%= room_id %>"><!-- Do not delete the 'value' and 'name' param -->
                 </form>
