@@ -45,6 +45,7 @@ const HOST_NAME = isLocalHost > -1 ? HTTP_OR_S + HOST : HOST;
 
 /* ====== APP ====== */
     // Allow only 1 player to play if in localhost
+    console.log(HOST_NAME.split(':')[0]);
     if(HOST_NAME.split(':')[0] == 'localhost')
         m.config.game_config.players_count.min = 1;
 
