@@ -67,7 +67,7 @@ app
         let sitemap = m.sitemap.createSitemap({
             hostname: HOST_NAME,
             cacheTime: m.config.cache_time,
-            urls: [{ url: HOST_NAME + '/' }]
+            urls: [{ url: HTTP_OR_S + m.config.site + '/' }]
         });
         res.header("Content-Type", "application/xml");
         res.send(sitemap.toString());
