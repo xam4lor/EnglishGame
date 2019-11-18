@@ -251,6 +251,8 @@ class GameParty {
                 }
             }
         }
+        console.log(tmpObjK);
+        console.log(finalScore);
 
         let tmpFScoresK = Object.keys(finalScore);
         let highest = Number.NEGATIVE_INFINITY;
@@ -258,6 +260,7 @@ class GameParty {
             if(tmpFScoresK[i] > highest)
                 highest = tmpFScoresK[i];
         }
+        console.log(finalScore);
 
         for (let i = 0; i < highest + 1; i++) {
             if(finalScore[i]) {
