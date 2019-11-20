@@ -21,14 +21,35 @@
         <main>
             <div class="m-section">
                 <!-- Tu peux modifier qu'à partir d'ici sinon je te décapite -->
-                <div class="answer_page">
-                    <p>Complete the following sentence (every hole must contain a number of chars between <%= min_chars %> and <%= max_chars %>) :</p>
+                <div class="global-div" style="display: flex; flex-direction:row;">
+                  <div style="display: flex; flex-direction:column;">
+                    <div class="timer-div" style="padding: 20px;padding-top: 13px;margin-left: 50px;margin-right: 10px;border-style: solid;margin-bottom: 20px;border-color: black;">
+                      Timer
+                    </div>
+                    <div class="users_div" style="margin-right: 10px;margin-left: 50px;border: #60a6e3;border-style: solid;border-width: 3px;padding: 20px;padding-top: 13px">
+                      Users div
+                    </div>
+                  </div>
+                    <div style="display: flex; flex-direction:column;">
+                      <div class="game-name-div" style="margin-right: 50px;margin-left: 10px;border: #da6883;border-style: solid;border-width: 3px;padding: 20px;padding-top: 13px;margin-bottom: 20px">
+                        Game name
+                      </div>
+                      <div style="display: flex; flex-direction:row;">
+                        <div class="answer_page answer_div" style="margin-right: 10px;border: #e4b74a;border-style: solid;border-width: 3px;padding: 20px;padding-top: 13px;margin-left: 10px;">
+                            <p>Complete the following sentence (every hole must contain a number of chars between <%= min_chars %> and <%= max_chars %>) :</p>
 
-                    <div id="sentence-container"></div><!-- Do not delete anything -->
+                            <div id="sentence-container"></div><!-- Do not delete anything -->
 
-                    <br />
+                            <br />
 
-                    <input type="submit" onclick="submitAnswer()" value="Submit"><!-- Do not delete the 'onclick' param -->
+                            <input type="submit" onclick="submitAnswer()" value="Submit"><!-- Do not delete the 'onclick' param -->
+                        </div>
+
+                        <div class="chat_div" style="margin-right: 50px;margin-left: 10px;border: #d4df53;border-style: solid;border-width: 3px;padding: 20px;padding-top: 13px">
+                          Chat div
+                        </div>
+                      </div>
+                    </div>
                 </div>
             </div>
         </main>
