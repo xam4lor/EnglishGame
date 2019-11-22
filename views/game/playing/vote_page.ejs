@@ -25,8 +25,13 @@
                 <div class="vote_page">
                     <p>Select the uuid of the player with the best sentence :<p>
                     <div id="vote_select_area"></div><!-- Do not delete the 'id' param -->
-                    <br />
-                    <input type="submit" onclick="submitAnswer()" value="Submit"><!-- Do not delete the 'onclick' param -->
+                    <div style="display: flex; flex-direction:row; margin-left: 47%;margin-top: 20px;">
+                      <br />
+                      <input type="submit" onclick="submitAnswer()" value="Submit"><!-- Do not delete the 'onclick' param -->
+                      <div id="answerSubmitted" style="color: green; font-size: 25px; margin-left: 10px; opacity: 0">
+                        &check;
+                      </div>
+                    </div>
 
                     <br /><br />
                     <p>Sentences :</p>
