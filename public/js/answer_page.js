@@ -7,6 +7,10 @@ socket.on('game_reload', function() {
     document.location.reload();
 });
 
+var validAnswer = 0; //True if answer is correct (check if statement below)
+                     // Used in submitAnswer() function to avoid the "Submit"
+                     // button to be ticked when the answer is not valid
+
 socket.on('game_answer_response', function(message, error, code) {
     if(error) {
         alert('Error :' + message);
@@ -14,6 +18,8 @@ socket.on('game_answer_response', function(message, error, code) {
     }
     else {
         console.log(message);
+
+        validAnswer = 1;
 
         if(code == 1)
             alert('Waiting for the others to answer...');
@@ -33,6 +39,9 @@ function submitAnswer() {
 
     socket.emit('user_answer', room, ans);
     // ans = "first hole sentence $$$ second hole sentence"
+
+    if(validAnswer)
+      document.getElementById("answerSubmitted").style.opacity = "1";
 }
 
 window.onload = function() {
