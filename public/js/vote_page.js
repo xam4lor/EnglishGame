@@ -25,6 +25,8 @@ function submitAnswer() {
     let ans = document.getElementById('vote_select').value;
     socket.emit('user_answer', room, ans);
     // ans = uuid of the selected player
+
+    document.getElementById("answerSubmitted").style.opacity = "1";
 }
 
 window.onload = function() {
