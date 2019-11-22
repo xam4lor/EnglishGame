@@ -7,10 +7,6 @@ socket.on('game_reload', function() {
     document.location.reload();
 });
 
-var validAnswer = 0; //True if answer is correct (check if statement below)
-                     // Used in submitAnswer() function to avoid the "Submit"
-                     // button to be ticked when the answer is not valid
-
 socket.on('game_answer_response', function(message, error, code) {
     if(error) {
         alert('Error :' + message);
