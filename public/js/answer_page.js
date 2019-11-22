@@ -19,7 +19,7 @@ socket.on('game_answer_response', function(message, error, code) {
     else {
         console.log(message);
 
-        validAnswer = 1;
+        document.getElementById("answerSubmitted").style.opacity = "1";
 
         if(code == 1)
             alert('Waiting for the others to answer...');
@@ -39,9 +39,6 @@ function submitAnswer() {
 
     socket.emit('user_answer', room, ans);
     // ans = "first hole sentence $$$ second hole sentence"
-
-    if(validAnswer)
-      document.getElementById("answerSubmitted").style.opacity = "1";
 }
 
 window.onload = function() {
